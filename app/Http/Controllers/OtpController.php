@@ -3,63 +3,55 @@
 namespace App\Http\Controllers;
 
 use App\Models\Otp;
+use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 
 class OtpController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * send Otp
      */
-    public function index()
+    public function sendOtp(Request $request)
     {
-        //
+        $request->validate(['email' => 'required|email']);
+
+        $otp = rand(100000, 999999);
+        Otp::create([
+            'email' => $request->email,
+            'otp_code' => $otp,
+            'expires_at' => now()->addMinutes(10),
+        ]);
+
+        Mail::raw("Kode OTP anda adalah: $otp", function ($message) use ($request) {
+            $message->to($request->email)->subject('Kode OTP Anda');
+        });
+
+        return response()->json(['message' => 'OTP telah dikirim ke email Anda.']);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Verify Otp
      */
-    public function create()
+    public function verifyOtp(Request $request)
     {
-        //
-    }
+        $request->validate(['email' => 'required|email', 'otp_code' => 'required|digits:6']);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        $otp = Otp::where('email', $request->email)
+            ->where('otp_code', $request->otp_code)
+            ->where('expires_at', '>', now())
+            ->first();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Otp $otp)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Otp $otp)
-    {
-        //
-    }
+        if (!$otp) return response()->json(['message' => 'Kode OTP tidak valid atau telah kedaluwarsa.'], 401);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Otp $otp)
-    {
-        //
-    }
+        $user = User::firstOrCreate(['email' => $request->email]);
+        $token = $user->createToken('auth_token')->plainTextToken;
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Otp $otp)
-    {
-        //
+        return response()->json([
+            'message' => 'OTP berhasil diverifikasi.',
+            'token' => $token,
+            'user' => $user,
+        ]);
     }
 }
