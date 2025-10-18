@@ -35,6 +35,16 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
+    // CSRF token endpoint
+    Route::get('/api/csrf-token', function () {
+        return response()->json(['csrf_token' => csrf_token()]);
+    });
+    
+    // CSRF token endpoint
+    Route::get('/csrf-token', function () {
+        return response()->json(['csrf_token' => csrf_token()]);
+    });
+    
     // API routes for book management (with CSRF protection)
     Route::get('/api/books', [WebBookController::class, 'index'])->name('api.books.index');
     Route::post('/api/books', [WebBookController::class, 'store'])->name('api.books.store');
