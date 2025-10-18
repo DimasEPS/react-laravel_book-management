@@ -35,12 +35,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
-    // AJAX routes for book management (with CSRF protection)
-    Route::get('/ajax/books', [WebBookController::class, 'index'])->name('ajax.books.index');
-    Route::post('/ajax/books', [WebBookController::class, 'store'])->name('ajax.books.store');
-    Route::get('/ajax/books/{book}', [WebBookController::class, 'show'])->name('ajax.books.show');
-    Route::put('/ajax/books/{book}', [WebBookController::class, 'update'])->name('ajax.books.update');
-    Route::delete('/ajax/books/{book}', [WebBookController::class, 'destroy'])->name('ajax.books.destroy');
+    // API routes for book management (with CSRF protection)
+    Route::get('/api/books', [WebBookController::class, 'index'])->name('api.books.index');
+    Route::post('/api/books', [WebBookController::class, 'store'])->name('api.books.store');
+    Route::get('/api/books/{book}', [WebBookController::class, 'show'])->name('api.books.show');
+    Route::put('/api/books/{book}', [WebBookController::class, 'update'])->name('api.books.update');
+    Route::delete('/api/books/{book}', [WebBookController::class, 'destroy'])->name('api.books.destroy');
 });
 
 // Include original Breeze auth routes for traditional email/password authentication

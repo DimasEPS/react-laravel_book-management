@@ -2,7 +2,7 @@
 
 class WebApiService {
     constructor() {
-        this.baseURL = "/ajax";
+        this.baseURL = "/api";
     }
 
     // Get CSRF token from meta tag
